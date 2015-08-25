@@ -458,7 +458,7 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
   _getBookmarkDataForTemplate: function(bookmark) {
       if (this.options.getBookmarkDataForTemplate) {
         return this.options.getBookmarkDataForTemplate.call(this, bookmark);
-      } else { 
+      } else {
       return {
         coords: this.formatCoords(bookmark.latlng),
         name: this.formatName(bookmark.name),
@@ -574,7 +574,7 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
       });
       self._appendItems([item]);
     });
-    this._showBookmark(bookmark);
+    // this._showBookmark(bookmark);
   },
 
   /**
@@ -777,7 +777,7 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
    */
   _gotoBookmark: function(bookmark) {
     this._map.setView(bookmark.latlng, bookmark.zoom);
-    this._showBookmark(bookmark);
+    // this._showBookmark(bookmark);
   },
 
   /**
