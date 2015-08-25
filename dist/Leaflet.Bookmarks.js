@@ -1474,7 +1474,7 @@ GlobalStorage.prototype.setItem = function(key, item, callback) {
 GlobalStorage.prototype.getAllItems = function(callback) {
   var items = [];
   for (var key in data) {
-    if (data.hasOwnProperty(key) && key.indexOf(this_prefix) === 0) {
+    if (data.hasOwnProperty(key) && key.indexOf(this._prefix) === 0) {
       items.push(data[key]);
     }
   }
