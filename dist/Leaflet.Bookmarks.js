@@ -61,8 +61,10 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
     iconWrapperClass: 'bookmarks-icon-wrapper',
     listWrapperClass: 'bookmarks-list-wrapper',
     listWrapperClassAdd: 'list-with-button',
+    listSearchClass: 'list-search-wrapper',
     wrapperClass: 'bookmarks-container',
     addBookmarkButtonCss: 'add-bookmark-button',
+    searchBookmarksInputCss: 'search-bookmark-input',
 
     animateClass: 'bookmark-added-anim',
     animateDuration: 150,
@@ -103,6 +105,7 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
     scrollDuration: 1000,
     popupOnShow: true,
     addNewOption: true,
+    searchAttribute: false,
 
     /**
      * This you can change easily to output
@@ -163,6 +166,8 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
      * @type {Boolean}
      */
     this._isCollapsed = true;
+
+    this._searchFilter = "";
 
     L.Util.setOptions(this, options);
 
@@ -262,6 +267,8 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
   _createList: function(bookmarks) {
     this._listwrapper = L.DomUtil.create(
       'div', this.options.listWrapperClass, this._container);
+    this._searchwrapper = L.DomUtil.create(
+      'div', this.options.listSearchClass, this._listwrapper);
     this._list = L.DomUtil.create(
       'ul', this.options.listClass, this._listwrapper);
 
@@ -319,10 +326,40 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
       this._listwrapper.parentNode
         .classList.add(this.options.listWrapperClassAdd);
       addButton.innerHTML = '<span class="plus">+</span>' +
-        '<span class="content">' +
+        '<span class="content">asd' +
         this.options.addBookmarkMessage + '</span>';
       L.DomEvent.on(addButton, 'click', this._onAddButtonPressed, this);
     }
+    if(this.options.searchAttribute && this._searchwrapper.innerHTML.length === 0){
+
+      var input = L.DomUtil.create('input',
+        this.options.searchBookmarksInputCss,
+        this._searchwrapper);
+
+      input.setAttribute("placeholder", "Search...");
+
+      L.DomEvent.on(input, 'click', function(evt) {
+        L.DomEvent.stop(evt);
+      }, this);
+
+      L.DomEvent.on(input, 'keyup', this._onInputTextChange, this);
+
+    }
+  },
+
+  /**
+   * @param
+   */
+  _onInputTextChange: function(evt) {
+    L.DomEvent.stop(evt);
+    this._searchFilter = evt.target.value;
+
+    this._list.innerHTML = "";
+
+    var self = this;
+    this._storage.getAllItems(function(bookmarks) {
+      self._appendItems(bookmarks, true);
+    });
   },
 
   /**
@@ -334,6 +371,25 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
     this._map.fire('bookmark:new', {
       latlng: this._map.getCenter()
     });
+  },
+
+  /**
+   *
+   * @param {Array.<Object>} bookmarks
+   * @return {Array.<Object>}
+   */
+  _filterBookmarksBySearch: function(bookmarks, searchFilter) {
+    if (this.options.searchAttribute && searchFilter.length) {
+      var filteredBookmarks = [];
+      for (var i = 0, len = bookmarks.length; i < len; i++) {
+        if(bookmarks[i][this.options.searchAttribute].toLowerCase().indexOf(searchFilter.toLowerCase()) !== -1){
+          filteredBookmarks.push(bookmarks[i]);
+        }
+      }
+      return filteredBookmarks;
+    } else {
+      return bookmarks;
+    }
   },
 
   /**
@@ -369,13 +425,15 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
    * Append list items(render)
    * @param  {Array.<Object>} bookmarks
    */
-  _appendItems: function(bookmarks) {
+  _appendItems: function(bookmarks, disableScrollToLast) {
     var html = '';
     var wasEmpty = this._data.length === 0;
     var bookmark;
 
     // maybe you have something in mind?
     bookmarks = this._filterBookmarks(bookmarks);
+
+    bookmarks = this._filterBookmarksBySearch(bookmarks, this._searchFilter);
 
     // store
     this._data = this._data.concat(bookmarks);
@@ -400,7 +458,7 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
       window.setTimeout(function() {
         container.classList.remove(className);
       }, this.options.animateDuration);
-    } else {
+    } else if(!disableScrollToLast){
       this._scrollToLast();
     }
   },
@@ -504,6 +562,14 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
    * Hides bookmarks list and the form
    */
   collapse: function() {
+    L.DomUtil.removeClass(this._container, this.options.expandedClass);
+    this._isCollapsed = true;
+  },
+
+  /**
+   * Filters current visible bookmakrs
+   */
+  filter: function(filterString) {
     L.DomUtil.removeClass(this._container, this.options.expandedClass);
     this._isCollapsed = true;
   },
