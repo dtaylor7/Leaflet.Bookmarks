@@ -6,10 +6,12 @@
   width: 80%;
   display: block;
   margin-top: -20px;
+  height: 27px;
 }
 
 .leaflet-right .leaflet-bookmarks-control.expanded .list-search-wrapper .search-bookmark-input{
-  padding: 0 5px;
+  padding: 0px 5px;
+  height: 23px;
 }
 
 .leaflet-right .leaflet-bookmarks-control {
