@@ -79,6 +79,7 @@
   overflow-y: auto;
   margin-top: -1.25em;
   padding-top: 1.25em;
+  margin-right: 10px;
 }
 .leaflet-bookmarks-control .bookmarks-list {
   display: none;

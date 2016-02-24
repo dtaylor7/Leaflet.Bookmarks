@@ -195,10 +195,10 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
       .disableScrollPropagation(container);
     container.innerHTML = '<div class="' + this.options.headerClass +
       '"><span class="' + this.options.iconWrapperClass + '">' +
-      '<span class="' + this.options.iconClass + '"></span></span>';
+      'Stations</span>';
 
     this._icon = container.querySelector('.' + this.options.iconClass);
-    this._icon.title = this.options.title;
+    // this._icon.title = this.options.title;
 
     this._createList(this.options.bookmarks);
 
