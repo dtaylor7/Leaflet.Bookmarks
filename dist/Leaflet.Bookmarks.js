@@ -554,6 +554,9 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
    * Shows bookmarks list
    */
   expand: function() {
+    // var size = this._map.getSize();
+    // this._listwrapper.style.maxHeight =
+    //   Math.min(size.y * 0.6, size.y - 100) + 'px';
     L.DomUtil.addClass(this._container, this.options.expandedClass);
     this._isCollapsed = false;
   },
@@ -562,6 +565,13 @@ var Bookmarks = L.Control.extend( /**  @lends Bookmarks.prototype */ {
    * Hides bookmarks list and the form
    */
   collapse: function() {
+
+    var $el = $(this._listwrapper.parentNode.parentNode),
+    $parent = $(this._listwrapper.parentNode.parentNode.parentNode);
+
+    $el.detach();
+    $parent.append($el);
+
     L.DomUtil.removeClass(this._container, this.options.expandedClass);
     this._isCollapsed = true;
   },
